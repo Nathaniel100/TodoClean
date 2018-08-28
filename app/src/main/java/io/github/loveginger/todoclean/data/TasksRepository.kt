@@ -144,9 +144,11 @@ class TasksRepository(
     if (cachedTasks == null) {
       cachedTasks = mutableMapOf()
     }
-    for ((taskId, task) in cachedTasks!!) {
-      if (task.completed) {
-        cachedTasks!!.remove(taskId)
+    val iterator = cachedTasks!!.entries.iterator()
+    while (iterator.hasNext()) {
+      val entry = iterator.next()
+      if (entry.value.completed) {
+        iterator.remove()
       }
     }
   }

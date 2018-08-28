@@ -58,9 +58,11 @@ class TasksRemoteDataSource private constructor() : TasksDataSource {
   }
 
   override fun clearCompletedTasks() {
-    for ((taskId, task) in tasksServiceData) {
-      if (task.completed) {
-        tasksServiceData.remove(taskId)
+    val iterator = tasksServiceData.entries.iterator()
+    while (iterator.hasNext()) {
+      val entry = iterator.next()
+      if (entry.value.completed) {
+        iterator.remove()
       }
     }
   }
