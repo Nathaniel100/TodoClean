@@ -66,6 +66,11 @@ class TasksFragment : Fragment(), TasksContract.View {
     setHasOptionsMenu(true)
   }
 
+  override fun onResume() {
+    super.onResume()
+    presenter.start()
+  }
+
   override fun onOptionsItemSelected(item: MenuItem?): Boolean {
     when (item!!.itemId) {
       R.id.menu_clear -> presenter.clearCompletedTasks()
