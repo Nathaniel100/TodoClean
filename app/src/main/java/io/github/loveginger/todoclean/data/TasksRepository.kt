@@ -2,11 +2,24 @@ package io.github.loveginger.todoclean.data
 
 import io.github.loveginger.todoclean.tasks.domain.model.Task
 
-
 class TasksRepository(
   private val tasksRemoteDataSource: TasksDataSource,
   private val tasksLocalDataSource: TasksDataSource
 ) : TasksDataSource {
+
+  companion object {
+    private var INSTANCE: TasksRepository? = null
+    fun getInstance(
+      tasksRemoteDataSource: TasksDataSource,
+      tasksLocalDataSource: TasksDataSource
+    ): TasksRepository =
+      INSTANCE ?: synchronized(this) {
+        INSTANCE ?: TasksRepository(tasksRemoteDataSource, tasksLocalDataSource).also {
+          INSTANCE = it
+        }
+      }
+  }
+
   private var cachedTasks: MutableMap<String, Task>? = null
   private var cacheIsDirty: Boolean = true
 
