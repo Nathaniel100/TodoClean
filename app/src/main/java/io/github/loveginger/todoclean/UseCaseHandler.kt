@@ -10,7 +10,7 @@ class UseCaseHandler(private val useCaseScheduler: UseCaseScheduler) {
   companion object {
     private var INSTANCE: UseCaseHandler? = null
     val instance = INSTANCE ?: synchronized(this) {
-      INSTANCE ?: UseCaseHandler(UseCaseThreadPoolScheduler()).also { INSTANCE = it }
+      INSTANCE ?: UseCaseHandler(UseCaseThreadPoolScheduler).also { INSTANCE = it }
     }
   }
 

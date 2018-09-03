@@ -40,4 +40,6 @@ data class Task(
     get() = !completed
   val empty: Boolean
     get() = title.isEmpty() && description.isEmpty()
+  val titleForList: String
+    get() = if (title.isEmpty()) title else description
 }

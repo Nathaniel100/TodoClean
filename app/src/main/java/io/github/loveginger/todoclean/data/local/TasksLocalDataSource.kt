@@ -7,6 +7,16 @@ import io.github.loveginger.todoclean.util.AppExecutors
 
 class TasksLocalDataSource(private val tasksDao: TasksDao, private val appExecutors: AppExecutors) :
   TasksDataSource {
+
+  companion object {
+    private var INSTANCE: TasksLocalDataSource? = null
+    fun getInstance(tasksDao: TasksDao, appExecutors: AppExecutors): TasksLocalDataSource =
+      INSTANCE ?: synchronized(this) {
+        INSTANCE ?: TasksLocalDataSource(tasksDao, appExecutors).also { INSTANCE = it }
+      }
+  }
+
+
   override fun getTasks(callback: TasksDataSource.LoadTasksCallback) {
     appExecutors.diskIo.execute {
       val tasks = tasksDao.getTasks()
