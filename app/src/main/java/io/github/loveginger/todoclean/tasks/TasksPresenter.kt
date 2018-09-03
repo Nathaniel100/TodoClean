@@ -7,9 +7,11 @@ import io.github.loveginger.todoclean.tasks.domain.usecase.ActivateTask
 import io.github.loveginger.todoclean.tasks.domain.usecase.ClearCompleteTasks
 import io.github.loveginger.todoclean.tasks.domain.usecase.CompleteTask
 import io.github.loveginger.todoclean.tasks.domain.usecase.GetTasks
+import io.github.loveginger.todoclean.util.AppExecutors
 
 
 class TasksPresenter(
+  private val appExecutors: AppExecutors,
   private val useCaseHandler: UseCaseHandler,
   private val tasksView: TasksContract.View,
   private val getTasks: GetTasks,
@@ -66,7 +68,9 @@ class TasksPresenter(
           }
           tasksView.showLoadingTasksError()
         }
-      })
+      },
+      appExecutors.mainThread
+    )
   }
 
   private fun processTasks(tasks: List<Task>) {
@@ -115,7 +119,9 @@ class TasksPresenter(
         override fun onError() {
           tasksView.showLoadingTasksError()
         }
-      })
+      },
+      appExecutors.mainThread
+    )
   }
 
   override fun activateTask(activeTask: Task) {
@@ -131,7 +137,9 @@ class TasksPresenter(
         override fun onError() {
           tasksView.showLoadingTasksError()
         }
-      })
+      },
+      appExecutors.mainThread
+    )
   }
 
   override fun clearCompletedTasks() {
@@ -147,7 +155,8 @@ class TasksPresenter(
         override fun onError() {
           tasksView.showLoadingTasksError()
         }
-      }
+      },
+      appExecutors.mainThread
     )
   }
 

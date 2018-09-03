@@ -17,14 +17,20 @@ class AppExecutors(
   )
 
   private class MainThreadExecutor : Executor {
-    private val handler = Handler(Looper.getMainLooper())
     override fun execute(command: Runnable) {
-      handler.post(command)
+      if (currentIsMainThread()) {
+        command.run()
+      } else {
+        val handler = Handler(Looper.getMainLooper())
+        handler.post(command)
+      }
     }
   }
 
   companion object {
     private const val THREAD_COUNT = 3
+
+    private fun currentIsMainThread() = Thread.currentThread() == Looper.getMainLooper().thread
   }
 }
 

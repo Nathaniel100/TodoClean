@@ -1,6 +1,7 @@
 package io.github.loveginger.todoclean
 
 import io.github.loveginger.todoclean.util.EspressoIdlingResource
+import java.util.concurrent.Executor
 
 
 /**
@@ -17,10 +18,11 @@ class UseCaseHandler(private val useCaseScheduler: UseCaseScheduler) {
   fun <T : UseCase.RequestValues, R : UseCase.ResponseValue> execute(
     useCase: UseCase<T, R>,
     values: T,
-    callback: UseCaseCallback<R>
+    callback: UseCaseCallback<R>,
+    callbackExecutor: Executor
   ) {
     useCase.requestValues = values
-    useCase.useCaseCallback = UiCallbackWrapper(callback, this)
+    useCase.useCaseCallback = CallbackWrapper(callback, callbackExecutor)
 
     EspressoIdlingResource.increment() // App is busy until further notice
 
@@ -31,27 +33,23 @@ class UseCaseHandler(private val useCaseScheduler: UseCaseScheduler) {
       }
     }
   }
-
-  fun <V : UseCase.ResponseValue> notifyResponse(response: V, callback: UseCaseCallback<V>) {
-    useCaseScheduler.notifyResponse(response, callback)
-  }
-
-  fun <V : UseCase.ResponseValue> notifyError(callback: UseCaseCallback<V>) {
-    useCaseScheduler.notifyError(callback)
-  }
 }
 
-private class UiCallbackWrapper<V : UseCase.ResponseValue>(
+private class CallbackWrapper<V : UseCase.ResponseValue>(
   private val callback: UseCaseCallback<V>,
-  private val useCaseHandler: UseCaseHandler
+  private val callbackExecutor: Executor
 ) : UseCaseCallback<V> {
 
   override fun onSuccess(response: V) {
-    useCaseHandler.notifyResponse(response, callback)
+    callbackExecutor.execute {
+      callback.onSuccess(response)
+    }
   }
 
   override fun onError() {
-    useCaseHandler.notifyError(callback)
+    callbackExecutor.execute {
+      callback.onError()
+    }
   }
 
 }

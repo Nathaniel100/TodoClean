@@ -14,11 +14,19 @@ import io.github.loveginger.todoclean.util.AppExecutors
 
 object Injection {
 
+  private var appExecutors: AppExecutors? = null
+
+  fun provideAppExecutors(): AppExecutors {
+    return appExecutors ?: synchronized(this) {
+      appExecutors ?: AppExecutors().also { appExecutors = it }
+    }
+  }
+
   fun provideTasksRepository(context: Context): TasksRepository {
     val database = TodoDatabase.getInstance(context)
     return TasksRepository.getInstance(
       TasksRemoteDataSource,
-      TasksLocalDataSource.getInstance(database.taskDao(), AppExecutors())
+      TasksLocalDataSource.getInstance(database.taskDao(), provideAppExecutors())
     )
   }
 

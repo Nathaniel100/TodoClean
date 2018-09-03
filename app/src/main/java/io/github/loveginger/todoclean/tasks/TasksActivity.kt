@@ -42,6 +42,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     tasksPresenter = TasksPresenter(
+      Injection.provideAppExecutors(),
       Injection.provideUseCaseHandler(),
       tasksFragment,
       Injection.provideGetTasks(applicationContext),
